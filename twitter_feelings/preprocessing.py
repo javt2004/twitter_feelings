@@ -63,9 +63,9 @@ def clean_data(df):
     df["content"] = df["content"].apply(delete_no_ascii)
     df["content"] = df["content"].apply(replace_special_chars)
     df["content"] = df["content"].apply(delete_numbers)
-    df["content"] = df["content"].apply(delete_punctuation)
+    # df["content"] = df["content"].apply(delete_punctuation)
     df["content"] = df["content"].apply(delete_repeated_characters)
-    df["content"] = df["content"].apply(convert_to_lowercase)
+    # df["content"] = df["content"].apply(convert_to_lowercase)
     df["content"] = df["content"].apply(delete_stop_words)
 
     df.to_csv("twitter_feelings/csv/cleaned.csv", index=False)

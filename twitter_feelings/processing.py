@@ -77,6 +77,56 @@ def has_exclamation(text):
     return 1 if "!" in text or "¡" in text else 0
 
 
+# Función para detectar puntos suspensivos (tanto ... como ..)
+def has_ellipsis(text):
+    """Verifica si el texto tiene puntos suspensivos (.. o ...)."""
+    if not isinstance(text, str):
+        return 0
+    return 1 if re.search(r"\.{2,}", text) else 0
+
+
+# Longitud promedio de las palabras en el texto
+def average_word_length(text):
+    words = re.findall(r"\b\w+\b", text)  # Tokenizar las palabras
+    if len(words) == 0:
+        return 0
+    return sum(len(word) for word in words) / len(words)
+
+
+# Función para contar palabras completamente en mayúsculas
+def count_uppercase_words(text):
+    words = re.findall(r"\b\w+\b", text)
+    return sum(1 for word in words if word.isupper())
+
+
+# Función para contar el número de adjetivos en el texto usando spaCy
+def count_adjectives(text):
+    if not isinstance(text, str):
+        return 0
+    doc = nlp(text.lower())  # Procesar el texto con spaCy
+    return sum(1 for token in doc if token.pos_ == "ADJ")  # Contar adjetivos
+
+
+# Función para calcular la densidad de signos de puntuación
+def punctuation_density(text):
+    """Calcula la densidad de signos de puntuación en relación al total de caracteres."""
+    if not isinstance(text, str) or len(text) == 0:
+        return 0
+    # Contar cuántos caracteres son signos de puntuación
+    punctuation_count = len(
+        re.findall(r"[^\w\s]", text)
+    )  # Caracteres que no son alfanuméricos ni espacios
+    return punctuation_count / len(text)
+
+
+def count_negation_words_spacy(text):
+    """Cuenta cuántas palabras de negación hay en el texto usando spaCy."""
+    if not isinstance(text, str):
+        return 0
+    doc = nlp(text)  # Procesar el texto con spaCy
+    return sum(1 for token in doc if token.dep_ == "neg")
+
+
 # Cargar el archivo CSV
 df = pd.read_csv("twitter_feelings/csv/cleaned.csv")
 
@@ -90,6 +140,16 @@ df["has_question"] = df["content"].apply(has_question)
 df["has_exclamation"] = df["content"].apply(has_exclamation)
 df["num_positive_words"] = df["content"].apply(count_positive_words)
 df["num_negative_words"] = df["content"].apply(count_negative_words)
+df["has_ellipsis"] = df["content"].apply(
+    has_ellipsis
+)  # Nueva característica para puntos suspensivos
+df["average_word_length"] = df["content"].apply(average_word_length)
+# df["num_uppercase_words"] = df["content"].apply(count_uppercase_words)
+df["num_adjectives"] = df["content"].apply(count_adjectives)
+df["punctuation_density"] = df["content"].apply(punctuation_density)
+# df["num_negation_words"] = df["content"].apply(count_negation_words_spacy)
+df = df.drop(columns=["content"])
+
 
 # Guardar el DataFrame actualizado en un nuevo archivo CSV
 df.to_csv("output_file.csv", index=False)

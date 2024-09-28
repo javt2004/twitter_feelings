@@ -9,6 +9,7 @@ readme = "README.md"
 python = "^3.12"
 pandas = "^2.2.3"
 spacy = "^3.7.6"
+nltk = "^3.9.1"
 
 
 [build-system]

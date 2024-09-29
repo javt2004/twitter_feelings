@@ -1,6 +1,7 @@
 import spacy
 import pandas as pd
 import re
+import string
 
 # Cargar el modelo de spaCy para español
 nlp = spacy.load("es_core_news_sm")
@@ -127,6 +128,22 @@ def count_negation_words_spacy(text):
     return sum(1 for token in doc if token.dep_ == "neg")
 
 
+# Función para contar el número de verbos en el texto usando spaCy
+def count_verbs(text):
+    """Cuenta el número de verbos en el texto usando spaCy."""
+    if not isinstance(text, str):
+        return 0
+    doc = nlp(text.lower())  # Procesar el texto con spaCy
+    return sum(1 for token in doc if token.pos_ == "VERB")  # Contar verbos
+
+
+def count_punctuation(text):
+    """Cuenta el número de signos de puntuación en el texto."""
+    if not isinstance(text, str):
+        return 0
+    return sum(1 for char in text if char in string.punctuation)
+
+
 # Cargar el archivo CSV
 df = pd.read_csv("twitter_feelings/csv/cleaned.csv")
 
@@ -148,6 +165,8 @@ df["average_word_length"] = df["content"].apply(average_word_length)
 df["num_adjectives"] = df["content"].apply(count_adjectives)
 df["punctuation_density"] = df["content"].apply(punctuation_density)
 # df["num_negation_words"] = df["content"].apply(count_negation_words_spacy)
+df["num_verbs"] = df["content"].apply(count_verbs)
+df["num_punctuation"] = df["content"].apply(count_punctuation)
 df = df.drop(columns=["content"])
 
 
